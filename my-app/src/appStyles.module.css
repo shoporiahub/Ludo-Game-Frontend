@@ -1,0 +1,21 @@
+/* Base layout for the app root */
+.approot {
+  position: relative;
+  display: flex;
+  min-height: 100vh;
+  width: 100vw;
+  align-items: center;
+  justify-content: center;
+  /* background: url('./assets/bg.png') no-repeat center center / cover;  */
+  overflow: hidden;
+  background-color: blueviolet;
+}
+
+
+/* center the board content above the background */
+.boardWrap {
+  display: flex;
+  z-index: 1;
+  align-items: center;
+  justify-content: center;
+}
