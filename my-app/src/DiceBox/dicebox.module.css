@@ -1,0 +1,50 @@
+.container {
+  perspective: 1000px;
+  width: 120px;
+  height: 120px;
+  cursor: pointer;
+}
+
+.cube {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.face {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  background: white;
+  border: 2px solid #222;
+  border-radius: 16px;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Position each face */
+.front  { transform: rotateY(0deg) translateZ(60px); }
+.back   { transform: rotateY(180deg) translateZ(60px); }
+.right  { transform: rotateY(90deg) translateZ(60px); }
+.left   { transform: rotateY(-90deg) translateZ(60px); }
+.top    { transform: rotateX(90deg) translateZ(60px); }
+.bottom { transform: rotateX(-90deg) translateZ(60px); }
+
+/* Dots */
+.dot {
+  width: 18px;
+  height: 18px;
+  background: black;
+  border-radius: 50%;
+  position: absolute;
+}
+
+.topLeft     { top: 25%; left: 25%; }
+.topRight    { top: 25%; right: 25%; }
+.bottomLeft  { bottom: 25%; left: 25%; }
+.bottomRight { bottom: 25%; right: 25%; }
+.middleLeft  { top: 50%; left: 25%; transform: translateY(-50%); }
+.middleRight { top: 50%; right: 25%; transform: translateY(-50%); }
