@@ -6,9 +6,8 @@ function App() {
     <>
       <div className={styles.approot}>
         <div className={styles.boardWrap}>
-          {/* <LudoBoard /> */}
-          <DiceBox value={3} />
-
+          <LudoBoard />
+          {/* <DiceBox value={3} /> */}
         </div>
       </div>
     </>

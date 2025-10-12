@@ -1,72 +1,75 @@
 // src/components/Cell.jsx
 import React from "react";
-import { COLORS, START_COORDS } from "../utils/constants";
+import { COLORS, SAFE_CELLS, CUSTOM_CELL_COLORS } from "../utils/constants";
 import Token from "./Token";
+import FourTriangles from "./cellComponents/fourTriangles";
+import DiagonalCell from "./cellComponents/DiagonalCell";
+import SingleColorCell from "./cellComponents/SingleColorCell";
+import SafeStar from "./SafeStar";
+
+// Home border helper
+const isHomeBorderCell = (color, r, c) => {
+  switch(color){
+    case "red": return r === 0 || r === 5 || c === 0 || c === 5;
+    case "green": return r === 0 || r === 5 || c === 9 || c === 14;
+    case "yellow": return r === 9 || r === 14 || c === 9 || c === 14;
+    case "blue": return r === 9 || r === 14 || c === 0 || c === 5;
+    default: return false;
+  }
+};
 
 export default function Cell({ r, c, type, tokens, turn, selectedToken, onTokenClick }) {
   const isHomeCorner = type.startsWith("home-");
-  const bg =
-    type === "center"
-      ? "#ffffff"
+  const homeColor = isHomeCorner ? type.split("-")[1] : null;
+
+  const customCell = CUSTOM_CELL_COLORS?.find(cell => cell.r === r && cell.c === c);
+
+  // Base background
+  let backgroundStyle = {
+    background: isHomeCorner 
+      ? (isHomeBorderCell(homeColor, r, c) ? COLORS[homeColor] : "#fff")
+      : type === "center" 
+      ? "#fff" 
+      : type.startsWith("homepath-") 
+      ? COLORS[type.split("-")[1]] 
       : type === "path"
       ? "#fff"
-      : isHomeCorner
-      ? COLORS[type.split("-")[1]]
-      : "#fff";
+      : "#fff"
+  };
 
-  const border = isHomeCorner
-    ? "2px solid rgba(0,0,0,0.08)"
-    : "1px solid rgba(0,0,0,0.06)";
+  const border = isHomeCorner ? "2px solid rgba(0,0,0,0.08)" : "1px solid rgba(0,0,0,0.06)";
+  const safeCell = SAFE_CELLS.find(cell => cell.r === r && cell.c === c);
 
   return (
     <div
       style={{
-        background: bg,
+        ...backgroundStyle,
         border,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         position: "relative",
-        boxSizing: "border-box",
+        boxSizing: "border-box"
       }}
     >
+      {/* Custom cell rendering */}
+      {customCell?.fourColors && <FourTriangles colors={customCell} />}
+      {customCell?.diagonal && !customCell.fourColors && (
+        <DiagonalCell color1={customCell.color1} color2={customCell.color2} direction={customCell.diagonalDir} />
+      )}
+      {customCell && !customCell.diagonal && !customCell.fourColors && (
+        <SingleColorCell color={customCell.color} />
+      )}
+
       {/* Tokens */}
-      <div style={{ display: "flex", gap: 4, flexWrap: "wrap", justifyContent: "center" }}>
-        {tokens.map((t) => (
-          <Token
-            key={t.id}
-            token={t}
-            turn={turn}
-            selected={selectedToken === t.id}
-            onClick={onTokenClick}
-          />
+      <div style={{ display: "flex", gap: 4, flexWrap: "wrap", justifyContent: "center", position: "relative", zIndex: 1 }}>
+        {tokens.map(t => (
+          <Token key={t.id} token={t} turn={turn} selected={selectedToken === t.id} onClick={onTokenClick} />
         ))}
       </div>
 
-      {/* Debug: show start markers */}
-      {Object.entries(START_COORDS).map(([p, coord]) => {
-        if (coord.r === r && coord.c === c) {
-          return (
-            <div
-              key={`start-${p}`}
-              style={{
-                position: "absolute",
-                right: 4,
-                bottom: 4,
-                fontSize: 10,
-                background: "rgba(255,255,255,0.8)",
-                padding: "2px 4px",
-                borderRadius: 4,
-                border: "1px solid rgba(0,0,0,0.06)",
-                color: COLORS[p],
-              }}
-            >
-              ↳ {p}
-            </div>
-          );
-        }
-        return null;
-      })}
+      {/* Safe Star */}
+      {safeCell && <SafeStar color={safeCell.color} />}
     </div>
   );
 }
