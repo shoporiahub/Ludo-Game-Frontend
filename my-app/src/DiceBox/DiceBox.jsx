@@ -1,32 +1,45 @@
+// src/DiceBox/Dice3D.jsx
 import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { rollDice } from "../Store/DiceSlice";
+import { nextTurn } from "../Store/TurnSlice";
 import styles from "./dicebox.module.css";
 
-function Dice3D() {
+function Dice3D({ color }) {
+  const dispatch = useDispatch();
+  const currentPlayer = useSelector((state) => state.turn.currentPlayer);
+  const diceValue = useSelector((state) => state.dice.value);
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
 
-  const rollDice = () => {
-    // add at least 4–5 full rotations
-    const extraSpinsX = 1440; 
-    const extraSpinsY = 1440;
+  // hide dice if it's not this player's turn
+  if (currentPlayer !== color) return null;
 
-    // random orientation for final resting
+  const handleRoll = () => {
+    // roll the dice (redux updates diceValue)
+    dispatch(rollDice());
+
+    // spin animation
+    const extraSpinsX = 1440;
+    const extraSpinsY = 1440;
     const baseX = Math.floor(Math.random() * 4) * 90;
     const baseY = Math.floor(Math.random() * 4) * 90;
-
-    // accumulate so it spins every click
     const randX = rotation.x + extraSpinsX + baseX;
     const randY = rotation.y + extraSpinsY + baseY;
-
     setRotation({ x: randX, y: randY });
+
+    // switch turn after dice settles
+    setTimeout(() => {
+      dispatch(nextTurn());
+    }, 1500);
   };
 
   return (
-    <div className={styles.container} onClick={rollDice}>
+    <div className={styles.container} onClick={handleRoll}>
       <div
         className={styles.cube}
         style={{
           transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
-          transition: "transform 1.3s ease-in-out"
+          transition: "transform 1.3s ease-in-out",
         }}
       >
         {/* Face 1 */}

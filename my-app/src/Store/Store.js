@@ -1,9 +1,13 @@
 // src/Store/Store.js
 import { configureStore } from '@reduxjs/toolkit';
-import counterReducer from '../Slices/DiceValue';
+import diceReducer from './DiceSlice.js';
+import tokenReducer from './TokenSlice.js';
+import turnReducer from './TurnSlice.js';
 
 export const store = configureStore({
   reducer: {
-    counter: counterReducer,
+    dice: diceReducer,
+    tokens: tokenReducer,
+    turn: turnReducer,
   },
 });
