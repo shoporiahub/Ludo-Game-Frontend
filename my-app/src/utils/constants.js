@@ -15,28 +15,28 @@ export const cellSize = 24;
 // Home token slots inside each 6x6 home area
 export const HOME_SLOT_COORDS = {
   red: [
-    { r: 1, c: 1 },
-    { r: 1, c: 4 },
-    { r: 4, c: 1 },
-    { r: 4, c: 4 },
+    { r: 2, c: 2},
+    { r: 2, c: 3 },
+    { r: 3, c: 2 },
+    { r: 3, c: 3 },
   ],
   green: [
-    { r: 1, c: 10 },
-    { r: 1, c: 13 },
-    { r: 4, c: 10 },
-    { r: 4, c: 13 },
+    { r: 2, c: 11 },
+    { r: 2, c: 12 },
+    { r: 3, c: 11 },
+    { r: 3, c: 12 },
   ],
   yellow: [
-    { r: 10, c: 10 },
-    { r: 10, c: 13 },
-    { r: 13, c: 10 },
-    { r: 13, c: 13 },
+    { r: 11, c: 11 },
+    { r: 11, c: 12 },
+    { r: 12, c: 11 },
+    { r: 12, c: 12 },
   ],
   blue: [
-    { r: 10, c: 1 },
-    { r: 10, c: 4 },
-    { r: 13, c: 1 },
-    { r: 13, c: 4 },
+    { r: 11, c: 2 },
+    { r: 11, c: 3  },
+    { r: 12, c: 2 },
+    { r: 12, c: 3 },
   ],
 };
 

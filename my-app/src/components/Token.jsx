@@ -1,8 +1,21 @@
 // src/components/Token.jsx
 import React from "react";
 import { COLORS } from "../utils/constants";
+import redIcon from "../assets/greenIcon.png";
+import greenIcon from "../assets/redIcon.png";
+import yellowIcon from "../assets/yellowIcon.png";
+import blueIcon from "../assets/blueIcon.png";
+
+const ICONS = {
+  red: redIcon,
+  green: greenIcon,
+  yellow: yellowIcon,
+  blue: blueIcon,
+};
 
 export default function Token({ token, turn, selected, onClick }) {
+  const icon = ICONS[token.player];
+
   return (
     <div
       onClick={() => onClick(token)}
@@ -11,18 +24,28 @@ export default function Token({ token, turn, selected, onClick }) {
         width: 24,
         height: 24,
         borderRadius: "50%",
-        background: COLORS[token.player],
+        background: "white",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        color: "white",
-        fontSize: 11,
-        fontWeight: 700,
         cursor: token.player === turn ? "pointer" : "not-allowed",
-        boxShadow: selected ? "0 0 0 3px rgba(0,0,0,0.08)" : "none",
+        boxShadow: selected
+          ? "0 0 0 3px rgba(0,0,0,0.15)"
+          : "0 0 2px rgba(0,0,0,0.1)",
+        border: `2px solid ${COLORS[token.player]}`,
+        overflow: "hidden",
       }}
     >
-      {token.id.split("-")[1]}
+      <img
+        src={icon}
+        alt={token.player}
+        style={{
+          width: "50%",
+          height: "50%",
+          objectFit: "contain",
+          pointerEvents: "none",
+        }}
+      />
     </div>
   );
 }
