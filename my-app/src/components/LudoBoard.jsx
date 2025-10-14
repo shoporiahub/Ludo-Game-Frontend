@@ -1,12 +1,16 @@
 // src/components/LudoBoard.jsx
 import React, { useState, useMemo } from "react";
-import { players, COLORS, HOME_SLOT_COORDS, cellSize, GRID } from "../utils/constants";
+import { useSelector, useDispatch } from "react-redux";
+import { players, HOME_SLOT_COORDS, cellSize, GRID } from "../utils/constants";
 import { PATHS } from "../utils/ColorPath";
+import { nextTurn } from "../Store/TurnSlice";
 import BoardGrid from "./BoardGrid";
 import AnimatedToken from "../AnimationTokenWrapper";
 
 export default function LudoBoard() {
-  // --- Initial tokens ---
+  const dispatch = useDispatch();
+
+  // --- Tokens from local state ---
   const initialTokens = useMemo(() => {
     const t = {};
     players.forEach((p) => {
@@ -23,20 +27,30 @@ export default function LudoBoard() {
 
   const [tokens, setTokens] = useState(initialTokens);
   const [dice, setDice] = useState(null);
-  const [turn, setTurn] = useState("red");
   const [selectedToken, setSelectedToken] = useState(null);
 
+  // --- Current turn from Redux ---
+  const turn = useSelector((state) => state.turn.currentPlayer);
+
   // --- Roll Dice ---
-  const rollDice = () => {
+  const rollDiceHandler = () => {
     const roll = Math.floor(Math.random() * 6) + 1;
     setDice(roll);
     setSelectedToken(null);
-  };
 
-  // --- Next turn ---
-  const nextTurn = () => {
-    const idx = players.indexOf(turn);
-    setTurn(players[(idx + 1) % players.length]);
+    // Check if any token can move
+    const playerTokens = tokens[turn];
+    const canMove = playerTokens.some(
+      (t) => (t.status === "home" && roll === 6) || t.status === "onboard"
+    );
+
+    if (!canMove) {
+      // No movable token → skip turn automatically
+      setTimeout(() => {
+        dispatch(nextTurn());
+        setDice(null); // hide dice for next player
+      }, 500);
+    }
   };
 
   // --- Token click handler ---
@@ -44,35 +58,31 @@ export default function LudoBoard() {
     if (token.player !== turn) return;
     if (token.status === "completed") return;
 
-    // --- Token is in home ---
     if (token.status === "home") {
-      if (dice !== 6) return; // must roll 6 to leave home
+      if (dice !== 6) return;
 
-      // Move token to first step on path
       setTokens((prev) => {
         const copy = { ...prev, [token.player]: [...prev[token.player]] };
         const idx = copy[token.player].findIndex((t) => t.id === token.id);
         copy[token.player][idx] = { 
           ...copy[token.player][idx], 
           status: "onboard",
-          stepsMoved: 0 // first step on path
+          stepsMoved: 0
         };
         return copy;
       });
 
       setDice(null);
-      nextTurn();
+      dispatch(nextTurn());
       return;
     }
 
-    // --- Token is already on path ---
     if (token.status === "onboard") {
       setTokens((prev) => {
         const copy = { ...prev, [token.player]: [...prev[token.player]] };
         const idx = copy[token.player].findIndex((t) => t.id === token.id);
         let newSteps = copy[token.player][idx].stepsMoved + dice;
 
-        // Check if token completes path
         if (newSteps >= PATHS[token.player].length - 1) {
           copy[token.player][idx] = {
             ...copy[token.player][idx],
@@ -90,7 +100,7 @@ export default function LudoBoard() {
       });
 
       setDice(null);
-      nextTurn();
+      dispatch(nextTurn());
     }
   };
 
@@ -123,7 +133,6 @@ export default function LudoBoard() {
 
   return (
     <div style={{ position: "relative", width: GRID * cellSize, height: GRID * cellSize, padding: 18 }}>
-      {/* Board grid with home tokens */}
       <BoardGrid
         tokensByCell={tokensByCell}
         turn={turn}
@@ -131,7 +140,6 @@ export default function LudoBoard() {
         onTokenClick={handleTokenClick}
       />
 
-      {/* Animated tokens on path */}
       {animatedTokens.map((t) => (
         <AnimatedToken key={t.id} token={t} turn={turn} onClick={handleTokenClick} />
       ))}

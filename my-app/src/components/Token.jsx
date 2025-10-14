@@ -22,12 +22,14 @@ export default function Token({ token, turn }) {
   const playerPath = PATHS[token.player]; // array of board coordinates for each color
 
   const handleClick = () => {
-    console.log("Token clicked:", token);
+    console.log("Token clicked:", token,turn);
 
     // --- Only current player's tokens are clickable ---
     if (token.player !== turn) return;
     if (token.status === "completed") return;
 
+    console.log("Dice value:", diceValue );
+    
     // --- Case 1: Token is inside home ---
     if (token.status === "home") {
       if (diceValue === 6) {
@@ -71,7 +73,6 @@ export default function Token({ token, turn }) {
   };
 
   const icon = ICONS[token.player];
-  console.log("icconnn",icon);
   
 
   return (
