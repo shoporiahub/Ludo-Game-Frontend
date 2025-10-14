@@ -18,12 +18,12 @@ const ICONS = {
 
 export default function Token({ token, turn }) {
   const dispatch = useDispatch();
-  const diceValue = useSelector((state) => state.dice.value); // assuming you have a dice slice
-  const playerPath = PATHS[token.player];
+  const diceValue = useSelector((state) => state.dice.value); // from dice slice
+  const playerPath = PATHS[token.player]; // array of board coordinates for each color
 
   const handleClick = () => {
     console.log("Token clicked:", token);
-    
+
     // --- Only current player's tokens are clickable ---
     if (token.player !== turn) return;
     if (token.status === "completed") return;
@@ -31,20 +31,25 @@ export default function Token({ token, turn }) {
     // --- Case 1: Token is inside home ---
     if (token.status === "home") {
       if (diceValue === 6) {
-        // Bring out of home (first cell of path)
+        // Get first board index of the player path (their start cell)
+        const startIndex = 0; // Usually first index of that player's PATH array
+
         dispatch(
           moveToken({
             player: token.player,
             tokenId: token.id,
-            newPos: 0, // starting point of player's path
+            newPos: startIndex,
             stepsMoved: 0,
           })
         );
+      } else {
+        // Dice is not 6 → token cannot move out
+        console.log("Need 6 to move token out of home");
       }
       return;
     }
 
-    // --- Case 2: Token is active (moving along the path) ---
+    // --- Case 2: Token is active (already on board) ---
     if (token.status === "active") {
       const newSteps = token.stepsMoved + diceValue;
       const newPos = newSteps;
@@ -66,6 +71,8 @@ export default function Token({ token, turn }) {
   };
 
   const icon = ICONS[token.player];
+  console.log("icconnn",icon);
+  
 
   return (
     <div
@@ -92,7 +99,7 @@ export default function Token({ token, turn }) {
         transition: "transform 0.2s ease",
       }}
     >
-      {/* <img
+      <img
         src={icon}
         alt={token.player}
         style={{
@@ -101,7 +108,7 @@ export default function Token({ token, turn }) {
           objectFit: "contain",
           pointerEvents: "none",
         }}
-      /> */}
+      />
     </div>
   );
 }

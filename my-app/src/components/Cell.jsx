@@ -49,7 +49,8 @@ export default function Cell({ r, c, type, tokens, turn, selectedToken, onTokenC
   (type === "home-yellow" && r === 12 && c === 12) ||
   (type === "home-blue" && r === 12 && c === 2);
 
-
+  console.log("token ssss",tokens);
+  
   return (
     <div
       style={{

@@ -79,3 +79,8 @@ export const CUSTOM_CELL_COLORS = [
   { r: 6, c: 8, diagonal: true, color1: "green", color2: "yellow", diagonalDir: "tl-br" },
   { r: 8, c: 8, diagonal: true, color1: "yellow", color2: "blue", diagonalDir: "br-tl" },
 ];
+
+export const getPixelPosition = (r, c) => ({
+  x: c * cellSize,
+  y: r * cellSize,
+});
